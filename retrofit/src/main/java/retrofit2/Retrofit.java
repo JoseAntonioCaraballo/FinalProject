@@ -15,6 +15,7 @@
  */
 package retrofit2;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -34,7 +35,10 @@ import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Url;
 
+
 import static java.util.Collections.unmodifiableList;
+import okhttp3.Interceptor;
+import okhttp3.Request;
 import static retrofit2.Utils.checkNotNull;
 
 /**
@@ -566,5 +570,28 @@ public final class Retrofit {
       return new Retrofit(callFactory, baseUrl, converterFactories, adapterFactories,
           callbackExecutor, validateEagerly);
     }
+    
   }
+    
+//comp490-- Created a class that intercepts the header, adds a new header and then throws it back in.
+
+class JoseInterceptor implements Interceptor {
+    
+    @Override
+    public okhttp3.Response intercept(Interceptor.Chain chain) throws IOException {
+   
+        Request request = chain.request();
+        Request newRequest;
+
+        newRequest = request.newBuilder()
+                .header("Cache-Control", "no-cache" )
+                .addHeader("Cache-Control", "no-store")
+                .url("https://www.google.com")
+                .build();
+        
+        return chain.proceed(newRequest);
+    
+
+  }
+}
 }
