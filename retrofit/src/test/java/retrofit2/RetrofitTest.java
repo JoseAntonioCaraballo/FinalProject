@@ -15,6 +15,9 @@
  */
 package retrofit2;
 
+
+
+import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
@@ -31,10 +34,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
 import okhttp3.HttpUrl;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
+
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.mockwebserver.MockResponse;
@@ -49,10 +54,13 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import okhttp3.Request;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import okhttp3.Interceptor;
 import static okhttp3.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -62,6 +70,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import retrofit2.Retrofit.JoseInterceptor;
 
 public final class RetrofitTest {
   @Rule public final MockWebServer server = new MockWebServer();
@@ -632,20 +641,7 @@ public final class RetrofitTest {
     }
   }
 
-  @Test public void baseUrlNullThrows() {
-    try {
-      new Retrofit.Builder().baseUrl((String) null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("baseUrl == null");
-    }
-    try {
-      new Retrofit.Builder().baseUrl((HttpUrl) null);
-      fail();
-    } catch (NullPointerException e) {
-      assertThat(e).hasMessage("baseUrl == null");
-    }
-  }
+ 
 
   @Test public void baseUrlInvalidThrows() {
     try {
@@ -1194,15 +1190,6 @@ public final class RetrofitTest {
     assertThat(retrofit.callbackExecutor()).isSameAs(executor);
   }
 
-  @Test public void callbackExecutorPropagated() {
-    Executor executor = mock(Executor.class);
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl("http://example.com/")
-        .callbackExecutor(executor)
-        .build();
-    assertThat(retrofit.callbackExecutor()).isSameAs(executor);
-  }
-
   @Test public void callbackExecutorUsedForSuccess() throws InterruptedException {
     Executor executor = spy(new Executor() {
       @Override public void execute(Runnable command) {
@@ -1299,4 +1286,27 @@ public final class RetrofitTest {
 
     assertEquals("/?i=201", server.takeRequest().getPath());
   }
+  
+  
+//comp490-- This test finds the .baseurl and .url. and if they are null write messages
+  
+@Test public void joseNull() {
+    try {
+      new Retrofit.Builder().baseUrl((String) null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("baseUrl == null");
+    }
+    try {
+      new Retrofit.Builder().baseUrl((HttpUrl) null);
+      fail();
+    } catch (NullPointerException e) {
+      assertThat(e).hasMessage("baseUrl == null");
+    }
+  }
 }
+  
+
+    
+
+
